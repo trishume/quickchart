@@ -1,0 +1,10 @@
+{
+	"name": "quickchart",
+	"description": "Easily chart data in real time",
+	"copyright": "Copyright © 2016, Tristan Hume",
+	"authors": ["Tristan Hume"],
+	"dependencies": {
+		"vibe-d": "~>0.7.26"
+	},
+	"versions": ["VibeDefaultMain"]
+}
