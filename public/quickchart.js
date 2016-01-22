@@ -1,92 +1,129 @@
-(function(){
-var
-  container = document.getElementById("chart"),
-  x = [],
-  dataA = [],
-  dataB = [],
-  data = [[x, dataA], [x, dataB]],
-  options, i, timeseries, selStart = 10, selStop;
-
-// Mock Data:
-function sample(i) {
-  x.push(i);
-  dataA.push(Math.sin(i / 6) * (Math.random() + 1) / 2);
-  dataB.push(Math.sin(i / 6 + Math.PI / 2) * (Math.random() + 1) / 2);
+// set up our data series with 150 random data points
+var seriesData = [ [], [], [], [], [], [], [], [], [] ];
+var random = new Rickshaw.Fixtures.RandomData(150);
+for (var i = 0; i < 150; i++) {
+  random.addData(seriesData);
 }
-
-// Initial Data:
-for (i = 0; i < 100; i++) {
-  sample(i);
-}
-
-// Envision Timeseries Options
-options = {
-  container : container,
-  data : {
-    detail : data,
-    summary : data
-  },
-  defaults : {
-    summary : {
-      config : {
-        handles : { show : true }
-      }
+var palette = new Rickshaw.Color.Palette( { scheme: 'classic9' } );
+// instantiate our graph!
+var graph = new Rickshaw.Graph( {
+  element: document.getElementById("chart"),
+  width: 900,
+  height: 500,
+  renderer: 'area',
+  stroke: true,
+  preserve: true,
+  series: [
+    {
+      color: palette.color(),
+      data: seriesData[0],
+      name: 'Moscow'
+    }, {
+      color: palette.color(),
+      data: seriesData[1],
+      name: 'Shanghai'
+    }, {
+      color: palette.color(),
+      data: seriesData[2],
+      name: 'Amsterdam'
+    }, {
+      color: palette.color(),
+      data: seriesData[3],
+      name: 'Paris'
+    }, {
+      color: palette.color(),
+      data: seriesData[4],
+      name: 'Tokyo'
+    }, {
+      color: palette.color(),
+      data: seriesData[5],
+      name: 'London'
+    }, {
+      color: palette.color(),
+      data: seriesData[6],
+      name: 'New York'
     }
-  },
-  selectionCallback: function(sel) {
-    console.log(sel);
-    selStart = sel.data.x.min;
-    selStop = sel.data.x.max;
+  ]
+} );
+graph.render();
+var preview = new Rickshaw.Graph.RangeSlider.Preview( {
+  graph: graph,
+  element: document.getElementById('preview'),
+} );
+var hoverDetail = new Rickshaw.Graph.HoverDetail( {
+  graph: graph,
+  xFormatter: function(x) {
+    return new Date(x * 1000).toString();
+  }
+} );
+var annotator = new Rickshaw.Graph.Annotate( {
+  graph: graph,
+  element: document.getElementById('timeline')
+} );
+var legend = new Rickshaw.Graph.Legend( {
+  graph: graph,
+  element: document.getElementById('legend')
+} );
+var shelving = new Rickshaw.Graph.Behavior.Series.Toggle( {
+  graph: graph,
+  legend: legend
+} );
+var order = new Rickshaw.Graph.Behavior.Series.Order( {
+  graph: graph,
+  legend: legend
+} );
+var highlighter = new Rickshaw.Graph.Behavior.Series.Highlight( {
+  graph: graph,
+  legend: legend
+} );
+var smoother = new Rickshaw.Graph.Smoother( {
+  graph: graph,
+  element: document.querySelector('#smoother')
+} );
+var ticksTreatment = 'glow';
+var xAxis = new Rickshaw.Graph.Axis.Time( {
+  graph: graph,
+  ticksTreatment: ticksTreatment,
+  timeFixture: new Rickshaw.Fixtures.Time.Local()
+} );
+xAxis.render();
+var yAxis = new Rickshaw.Graph.Axis.Y( {
+  graph: graph,
+  tickFormat: Rickshaw.Fixtures.Number.formatKMBT,
+  ticksTreatment: ticksTreatment
+} );
+yAxis.render();
+var controls = new RenderControls( {
+  element: document.querySelector('form'),
+  graph: graph
+} );
+// add some data every so often
+var messages = [
+  "Changed home page welcome message",
+  "Minified JS and CSS",
+  "Changed button color from blue to green",
+  "Refactored SQL query to use indexed columns",
+  "Added additional logging for debugging",
+  "Fixed typo",
+  "Rewrite conditional logic for clarity",
+  "Added documentation for new methods"
+];
+setInterval( function() {
+  // random.removeData(seriesData);
+  random.addData(seriesData);
+  graph.update();
+}, 500 );
+function addAnnotation(force) {
+  if (messages.length > 0 && (force || Math.random() >= 0.95)) {
+    annotator.add(seriesData[2][seriesData[2].length-1].x, messages.shift());
+    annotator.update();
   }
 }
-
-// Render the timeseries
-timeseries = new envision.templates.TimeSeries(options);
-
-// Method to get new data
-// This could be part of an Ajax callback, a websocket callback,
-// or streaming / long-polling data source.
-function getNewData () {
-  i++;
-
-  // Short circuit (no need to keep going!  you get the idea)
-  if (i > 1000) return;
-
-  sample(i);
-  animate(i);
-}
-
-// Initial request for new data
-getNewData();
-
-// Animate the new data
-function animate (i) {
-  // Draw the summary first
-  timeseries.summary.draw(null, {
-    xaxis : {
-      min : 0,
-      max : i
-    }
-  });
-
-  // console.log(timeseries);
-  console.log(selStart);
-
-  // Trigger the select interaction.
-  // Update the select region and draw the detail graph.
-  if(selStop >= i - 2 || selStop == undefined) {
-    selStop = i;
-  }
-  timeseries.summary.trigger('select', {
-    data : {
-      x : {
-        min : selStart,
-        max : selStop
-      }
-    }
-  });
-
-  setTimeout(getNewData, 1000);
-}
-
-})();
+addAnnotation(true);
+setTimeout( function() { setInterval( addAnnotation, 6000 ) }, 6000 );
+// var previewXAxis = new Rickshaw.Graph.Axis.Time({
+//   graph: preview.previews[0],
+//   timeFixture: new Rickshaw.Fixtures.Time.Local(),
+//   ticksTreatment: ticksTreatment
+// });
+// previewXAxis.render();

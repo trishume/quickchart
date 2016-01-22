@@ -1,18 +1,89 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
 <head>
-    <title>quickchart</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="viewport" content="width=device-width">
-    <script type="text/javascript" src="vendor/envision.min.js"></script>
-    <link rel="stylesheet" href="vendor/envision.min.css" type="text/css" />
-</head>
+  <link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css">
+  <link type="text/css" rel="stylesheet" href="vendor/rickshaw.min.css">
+  <link type="text/css" rel="stylesheet" href="vendor/extensions.css">
 
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.13/d3.min.js"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+  <script>
+    jQuery.noConflict();
+  </script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
+
+  <script src="vendor/rickshaw.min.js"></script>
+  <script src="vendor/extensions.js"></script>
+</head>
 <body>
-  <div id="content">
-    <h3>QuickChart:</h3>
+
+<div id="content">
+
+  <form id="side_panel">
+    <h1>QuickChart</h1>
+    <section><div id="legend"></div></section>
+    <section>
+      <div id="renderer_form" class="toggler">
+        <input type="radio" name="renderer" id="area" value="area" checked>
+        <label for="area">area</label>
+        <input type="radio" name="renderer" id="bar" value="bar">
+        <label for="bar">bar</label>
+        <input type="radio" name="renderer" id="line" value="line">
+        <label for="line">line</label>
+        <input type="radio" name="renderer" id="scatter" value="scatterplot">
+        <label for="scatter">scatter</label>
+      </div>
+    </section>
+    <section>
+      <div id="offset_form">
+        <label for="stack">
+          <input type="radio" name="offset" id="stack" value="zero" checked>
+          <span>stack</span>
+        </label>
+        <label for="stream">
+          <input type="radio" name="offset" id="stream" value="wiggle">
+          <span>stream</span>
+        </label>
+        <label for="pct">
+          <input type="radio" name="offset" id="pct" value="expand">
+          <span>pct</span>
+        </label>
+        <label for="value">
+          <input type="radio" name="offset" id="value" value="value">
+          <span>value</span>
+        </label>
+      </div>
+      <div id="interpolation_form">
+        <label for="cardinal">
+          <input type="radio" name="interpolation" id="cardinal" value="cardinal" checked>
+          <span>cardinal</span>
+        </label>
+        <label for="linear">
+          <input type="radio" name="interpolation" id="linear" value="linear">
+          <span>linear</span>
+        </label>
+        <label for="step">
+          <input type="radio" name="interpolation" id="step" value="step-after">
+          <span>step</span>
+        </label>
+      </div>
+    </section>
+    <section>
+      <h6>Smoothing</h6>
+      <div id="smoother"></div>
+    </section>
+    <section></section>
+  </form>
+
+  <div id="chart_container">
     <div id="chart"></div>
+    <div id="timeline"></div>
+    <div id="preview"></div>
   </div>
-  <script type="text/javascript" src="quickchart.js"></script>
+
+</div>
+
+<script src="quickchart.js"></script>
+
 </body>
-</html>
