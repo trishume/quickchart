@@ -146,4 +146,6 @@ function connect(room) {
     window.setTimeout(connect,1000);
   }
 }
-connect("main");
+
+var queryStr = window.location.search.substring(1)
+connect((queryStr.length != 0) ? queryStr : "main");
